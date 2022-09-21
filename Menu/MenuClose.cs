@@ -1,10 +1,10 @@
-﻿using static Universal_Turing_Machine.ProgramStatus;
+﻿using static Universal_Turing_Machine.MenuState;
 using System;
 
 namespace Universal_Turing_Machine {
     class MenuClose : Menu {
-        public ProgramStatus Process(ProgramStatus current) {
-            Console.WriteLine("\n");
+        public MenuState Process(MenuState lastMenu) {
+            Console.Clear();
             Console.WriteLine("***************************************");
             Console.WriteLine("Universal Turing Machine C# has stopped");
             Console.WriteLine("***************************************");

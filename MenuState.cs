@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Universal_Turing_Machine {
-    enum ProgramStatus {
+    enum MenuState {
         INIT,
         MAIN,
         ABOUT,
