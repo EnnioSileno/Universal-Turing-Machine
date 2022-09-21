@@ -5,12 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Universal_Turing_Machine {
-    enum MenuState {
-        INIT,
-        MAIN,
-        ABOUT,
-        EMULATION,
-        CLOSING,
-        STOPPED,
+    abstract class EmulationStep {
+        public abstract EmulationState Process(EmulationState lastEmulationState, UTMConfiguration utmConfiguration);
     }
 }

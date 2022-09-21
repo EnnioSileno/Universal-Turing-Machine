@@ -13,7 +13,7 @@ namespace Universal_Turing_Machine {
             menus[INIT] = menuMain;
             menus[MAIN] = menuMain;
             menus[ABOUT] = new MenuAbout();
-            menus[SIMULATION] = new MenuSimulation();
+            menus[EMULATION] = new MenuEmulation();
             menus[CLOSING] = new MenuClose();
         }
 

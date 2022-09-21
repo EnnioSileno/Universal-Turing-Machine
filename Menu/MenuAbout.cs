@@ -11,8 +11,6 @@ namespace Universal_Turing_Machine {
             Console.WriteLine("projects from my computer science studies, which I rewrote in C#.");
             Console.WriteLine("It emulates an universal turing machine. The addition and");
             Console.WriteLine("the multiplication are already preconfigured.");
-            //" there is the possibility");
-            //Console.WriteLine("to program your own Turing machine by entering a binary string.");
             Console.WriteLine("\n");
             Console.WriteLine("Below follows an example of the used Syntax of a TM");
             Console.WriteLine("*  A TM is expressed as a 7-tuple (Q, Γ, B, ∑, δ, q0, F) where:");

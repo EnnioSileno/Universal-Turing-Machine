@@ -8,6 +8,7 @@ namespace Universal_Turing_Machine {
 
         static void Main(string[] args) {
             Console.OutputEncoding = System.Text.Encoding.Unicode;
+
             MenuController menuController = new MenuController();
             menuController.start();
         }
