@@ -36,7 +36,6 @@ namespace Universal_Turing_Machine {
 
         public void printHeader(EmulationState emulationState) {
             base.Process(EMULATION);
-            //base.Process(EMULATION);
             Console.WriteLine($"Current emulation state: {emulationState}");
             if (emulationState >= VALUE_SELECTION) {
                 Console.WriteLine("* Chosen Preconfiguration");
@@ -47,7 +46,7 @@ namespace Universal_Turing_Machine {
             if (emulationState >= MODE_SELECTION) {
                 Console.WriteLine($"* The {(utmConfiguration.UTMCodeType == ADDITION ? "first summand" : "multiplier")}: {utmConfiguration.FirstValue}");
                 Console.WriteLine($"* The {(utmConfiguration.UTMCodeType == ADDITION ? "second summand" : "multiplicand")}: {utmConfiguration.SecondValue}");
-                Console.WriteLine($"{(emulationState != MODE_SELECTION ? "*" : "")}\n");
+                Console.WriteLine($"{(emulationState != MODE_SELECTION ? "*" : "")}");
             }
             if (emulationState >= OVERVIEW) {
                 Console.WriteLine("* Chosen Runtime Mode");

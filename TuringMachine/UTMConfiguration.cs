@@ -17,24 +17,12 @@ namespace Universal_Turing_Machine {
     }
 
     class UTMConfiguration {
-
         private string machineConfiguration;
+        public string MachineConfiguration { get { return machineConfiguration; } }
         private UTMCodeType utmCodeType;
         public UTMCodeType UTMCodeType {
             get { return utmCodeType; }
-            set {
-                utmCodeType = value;
-                switch (value) {
-                    case ADDITION:
-                        machineConfiguration = UTMCodePreconfiguration.GetAddition();
-                        break;
-                    case MULTIPLICATION:
-                        machineConfiguration = UTMCodePreconfiguration.GetMultiplication();
-                        break;
-                    default:
-                        throw new ArgumentException($"There is no machine configuration for {value} preconfigured.");
-                }
-            }
+            set { utmCodeType = value; }
         }
         private UTMRuntimeMode utmMode;
         public UTMRuntimeMode UTMRuntimeMode {
@@ -51,7 +39,11 @@ namespace Universal_Turing_Machine {
         private int secondValue;
         public int SecondValue {
             get { return secondValue; }
-            set { secondValue = value; }
+            set
+            {
+                secondValue = value;
+                machineConfiguration = createMachineCodeString();      
+            }
         }
 
         public UTMConfiguration() {
@@ -64,22 +56,8 @@ namespace Universal_Turing_Machine {
             utmMode = STEP;
         }
 
-        public void printConfiguration(EmulationState emulationState) {
-            if (emulationState >= VALUE_SELECTION) {
-                Console.WriteLine("* Chosen Preconfiguration");
-                Console.WriteLine($"* {(utmCodeType == ADDITION ? "->" : "  ")} [1] Addition");
-                Console.WriteLine($"* {(utmCodeType == MULTIPLICATION ? "->" : "  ")} [2] Multiplication");
-                Console.WriteLine($"{(emulationState != VALUE_SELECTION ? "*" :  "")}");
-            } if (emulationState >= MODE_SELECTION) {
-                Console.WriteLine($"* The {(utmCodeType == ADDITION ? "first summand" : "multiplier")}: {firstValue}");
-                Console.WriteLine($"* The {(utmCodeType == ADDITION ? "second summand" : "multiplicand")}: {secondValue}");
-                Console.WriteLine($"{(emulationState != MODE_SELECTION ? "*" : "")}\n");
-            } if (emulationState >= OVERVIEW) {
-                Console.WriteLine("* Chosen Runtime Mode");
-                Console.WriteLine($"*   {(utmMode == STEP ? "->" : "  ")} [1] Step");
-                Console.WriteLine($"*   {(utmMode == CONTINUOUS ? "->" : "  ")} [2] Continuous");
-                Console.WriteLine("\n");
-            }
+        private string createMachineCodeString() {
+            return $"{UTMCodePreconfiguration.Preconfiguration(utmCodeType)}111{firstValue}*{secondValue}";
         }
     }
 }
