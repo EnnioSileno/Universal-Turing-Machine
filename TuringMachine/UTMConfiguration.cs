@@ -1,12 +1,11 @@
-﻿using static Universal_Turing_Machine.UTMCodeType;
+﻿using static Universal_Turing_Machine.UTMMachineCodeType;
 using static Universal_Turing_Machine.UTMRuntimeMode;
-using static Universal_Turing_Machine.EmulationState;
 
 using System;
 
 namespace Universal_Turing_Machine {
 
-    enum UTMCodeType {
+    enum UTMMachineCodeType {
         ADDITION,
         MULTIPLICATION
     }
@@ -19,8 +18,8 @@ namespace Universal_Turing_Machine {
     class UTMConfiguration {
         private string machineConfiguration;
         public string MachineConfiguration { get { return machineConfiguration; } }
-        private UTMCodeType utmCodeType;
-        public UTMCodeType UTMCodeType {
+        private UTMMachineCodeType utmCodeType;
+        public UTMMachineCodeType UTMCodeType {
             get { return utmCodeType; }
             set { utmCodeType = value; }
         }

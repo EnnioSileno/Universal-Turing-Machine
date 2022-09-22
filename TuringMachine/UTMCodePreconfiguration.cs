@@ -1,4 +1,4 @@
-﻿using static Universal_Turing_Machine.UTMCodeType;
+﻿using static Universal_Turing_Machine.UTMMachineCodeType;
 
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Universal_Turing_Machine {
     class UTMCodePreconfiguration {
 
-        public static string Preconfiguration(UTMCodeType type) {
+        public static string Preconfiguration(UTMMachineCodeType type) {
             return type == ADDITION ? getAddition() : getMultiplication();
         }
 

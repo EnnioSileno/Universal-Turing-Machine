@@ -1,5 +1,5 @@
 ﻿using static Universal_Turing_Machine.MenuState;
-using static Universal_Turing_Machine.UTMCodeType;
+using static Universal_Turing_Machine.UTMMachineCodeType;
 using static Universal_Turing_Machine.UTMRuntimeMode;
 using static Universal_Turing_Machine.EmulationState;
 

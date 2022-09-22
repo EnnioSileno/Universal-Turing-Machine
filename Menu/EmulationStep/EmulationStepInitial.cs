@@ -1,5 +1,5 @@
 ﻿using static Universal_Turing_Machine.EmulationState;
-using static Universal_Turing_Machine.UTMCodeType;
+using static Universal_Turing_Machine.UTMMachineCodeType;
 using System;
 
 namespace Universal_Turing_Machine {

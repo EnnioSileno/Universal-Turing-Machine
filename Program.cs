@@ -1,5 +1,4 @@
-﻿using static Universal_Turing_Machine.MenuState;
-using System;
+﻿using System;
 
 
 namespace Universal_Turing_Machine {
