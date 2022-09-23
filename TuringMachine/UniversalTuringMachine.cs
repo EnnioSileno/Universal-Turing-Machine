@@ -1,8 +1,10 @@
 ﻿using static Universal_Turing_Machine.UTMHeadMovement;
+using static Universal_Turing_Machine.UTMRuntimeMode;
 
 using System;
 using System.Collections.Generic;
 using System.Collections;
+using System.Text.RegularExpressions;
 
 namespace Universal_Turing_Machine {
     class UniversalTuringMachine {
@@ -58,8 +60,113 @@ namespace Universal_Turing_Machine {
                                     headMovementValues, NUMBER_OF_TAPES, encodedFunction)));
         }
 
-        private void runConfiguration(string v, UTMRuntimeMode mode) {
-            throw new NotImplementedException();
+        private void runConfiguration(string word, UTMRuntimeMode mode) {
+            //Fill tape
+            initalizeWord(word);
+            //start tm
+            //q1 is starting state, q2 endstate
+            bool running = true;
+            while (running) {
+                if (mode == STEP) {
+                    printOutStatus(mode);
+                }
+                if (currentState == END_STATE) {
+                    running = false;
+                } else {
+                    executeTransitionFunction();
+                }
+            }
+            int result = 0;
+            for (int i = tapes[TAPE_THREE].HeadPosition; i >= 0; i--) {
+                if (tapes[TAPE_THREE].GetElement(i) == '0') result++;
+            }
+            if (mode == STEP) {
+                Console.WriteLine("*****");
+            }
+            Console.WriteLine($"The result is: {result}");
+            printOutStatus(mode);
         }
+
+        private void initalizeWord(string word) {
+            //check word if valid numbers
+            string pattern = "^(0|[1-9][0-9]*)\\*(0|[1-9][0-9]*)$";
+            Match match = Regex.Match(word, pattern);
+            if (!match.Success) throw new ArgumentException($"Not a valid word: {word}");
+            int firstValue = Int32.Parse(match.Groups[0].Value);
+            int secondValue = Int32.Parse(match.Groups[1].Value);
+            for (int i = 0; i < firstValue; i++) {
+                tapes[TAPE_ONE].AddElement('0');
+            }
+            tapes[TAPE_ONE].AddElement('1');
+            for (int i = 0; i < secondValue; i++) {
+                tapes[TAPE_ONE].AddElement('0');
+            }
+        }
+
+        private void executeTransitionFunction() {
+            TransitionFunction funcToExecute = nextTransitionFunciton();
+            writeNewSymbols(funcToExecute);
+            moveTapeHeadPositions(funcToExecute);
+            currentState = funcToExecute.NextState;
+            stepsDone++;
+        }
+
+        private TransitionFunction nextTransitionFunciton() {
+            //select possible transition funcitons
+            List<TransitionFunction> possibleTransitions = new List<TransitionFunction>();
+            foreach(TransitionFunction transition in transitionFunctions) {
+                if (currentState == transition.CurrentState) possibleTransitions.Add(transition);
+            }
+            //find correct transition function
+            TransitionFunction transitionToExecute = null;
+            foreach (TransitionFunction transition in possibleTransitions) {
+                if (isCorrectTransition(transition)) {
+                    transitionToExecute = transition;
+                    break;
+                }
+            }
+            if (transitionToExecute == null) throw new ArgumentException("No calculation Step found - Bad configuration");
+            return transitionToExecute;
+        }
+
+        private bool isCorrectTransition(TransitionFunction transition) {
+            return tapes[TAPE_ONE].GetElementOfHeadPosition() == transition.ReadSymbol(TAPE_ONE) &&
+                tapes[TAPE_TWO].GetElementOfHeadPosition() == transition.ReadSymbol(TAPE_TWO) &&
+                tapes[TAPE_THREE].GetElementOfHeadPosition() == transition.ReadSymbol(TAPE_THREE);
+        }
+
+        private void writeNewSymbols(TransitionFunction transition) {
+            foreach (int key in tapes.Keys) {
+                tapes[key].ReplaceElementAtHeadPosiiton(transition.WriteSymbol(key));
+            }
+        }
+
+        private void moveTapeHeadPositions(TransitionFunction transition) {
+            foreach (int key in tapes.Keys) {
+                tapes[key].MoveHeadPosition(transition.HeadMovement(key));
+            }
+        }
+
+        private void resetConfiguration() {
+            transitionFunctions.Clear();
+            foreach(Tape tape in tapes.Values) {
+                tape.Reset();
+            }
+            currentState = INITIAL_STATE;
+            stepsDone = 0;
+        }
+
+        private void printOutStatus(UTMRuntimeMode mode) {
+            if (mode == STEP) {
+                Console.WriteLine("*****");
+                Console.WriteLine($"Steps done: {stepsDone}");
+                Console.WriteLine($"Current state: {currentState}");
+            }
+            foreach (Tape tape in tapes.Values) {
+                tape.PrintStatus(mode);
+            }
+        }
+
+        
     }
 }
