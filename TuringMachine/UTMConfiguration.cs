@@ -56,7 +56,7 @@ namespace Universal_Turing_Machine {
         }
 
         private string createMachineCodeString() {
-            return $"{UTMCodePreconfiguration.Preconfiguration(utmCodeType)}111{firstValue}*{secondValue}";
+            return $"{UTMCodePreconfiguration.Preconfiguration(utmCodeType)}{firstValue}*{secondValue}";
         }
     }
 }
