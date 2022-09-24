@@ -94,9 +94,9 @@ namespace Universal_Turing_Machine {
                     case '_': tupel[i] = '2'; break;
                 }
             }
-            value = Int32.Parse(char.ToString(tupel[0])) * 9 + //3^2
-                Int32.Parse(char.ToString(tupel[1])) * 3 + //3^1
-                Int32.Parse(char.ToString(tupel[2])) + 1; //3^0, +1 because 0 = '0', 1 = '00', ...
+            value = Int32.Parse(char.ToString(tupel[0])) * 9 + //3^2 stays for the position (x,_,_)
+                Int32.Parse(char.ToString(tupel[1])) * 3 + //3^1 stays for the position (_,x,_)
+                Int32.Parse(char.ToString(tupel[2])) + 1; //3^0, +1 because 0 = '0', 1 = '00', ... stays for the position (_,_,x)
             return value;
         }
 

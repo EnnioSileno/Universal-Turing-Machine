@@ -50,12 +50,15 @@ namespace Universal_Turing_Machine {
 
         public void PrintStatus(UTMRuntimeMode mode) {
             while (headPosition - TAPE_OVERLOAD < 0) {
-                tape[0] = '_';
+                tape.Insert(0, '_');
+                headPosition++;
             }
-            /*while (headPosition + TAPE_OVERLOAD > tape.Count - 1) {
+            while (headPosition + TAPE_OVERLOAD > tape.Count - 1) {
                 tape.Add('_');
-            }*/
+            }
             if (mode == STEP) {
+                Console.WriteLine($"Tape {tapeNumber}: ...");
+                Console.WriteLine($"{String.Join(",", tape)}");
                 Console.WriteLine("...");
                 Console.WriteLine($"Index Read/write-head: {headPosition}                               ^");
             }

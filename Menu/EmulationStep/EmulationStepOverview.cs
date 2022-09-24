@@ -13,7 +13,7 @@ namespace Universal_Turing_Machine {
             if (lastEmulationState == OVERVIEW) {
                 Console.WriteLine("Please enter a valid option. Example: Enter \"1\" to select Addition.");
             }
-            Console.WriteLine("Your options are:\n(s) to start  | (q) to see the machine string  |  (b) to go back to the Mode Selection   |  (a) to abort");
+            Console.WriteLine("Your options are:\n(s) to start  | (q) to see the configuration string  |  (b) to go back to the Mode Selection   |  (a) to abort");
             Console.Write("Enter you input (default (s)): ");
             string input = Console.ReadLine();
             Console.WriteLine("\n");

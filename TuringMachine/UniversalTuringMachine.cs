@@ -24,10 +24,16 @@ namespace Universal_Turing_Machine {
         private int currentState = INITIAL_STATE;
         private int stepsDone = 0;
 
-        public UniversalTuringMachine(Dictionary<int, char> turingAlphabetValues) {
-            this.turingAlphabetValues = turingAlphabetValues;
+        public UniversalTuringMachine() {
+            initalizeTuringAlphabet();
             initalizeHeadMovementValues();
             initalizeTapes();
+        }
+
+        private void initalizeTuringAlphabet() {
+            turingAlphabetValues[0] = '0';
+            turingAlphabetValues[1] = '1';
+            turingAlphabetValues[2] = '_';
         }
 
         private void initalizeTapes() {
@@ -51,6 +57,7 @@ namespace Universal_Turing_Machine {
             Console.WriteLine("Created transition functions ");
 
             runConfiguration(configuration.MachineConfiguration.Substring(IndexOfTMCodeEnd + 3), mode);
+            resetConfiguration();
         }
 
         private void generateTransitionFuncitons(string machineConfiguration) {
@@ -67,10 +74,9 @@ namespace Universal_Turing_Machine {
             //q1 is starting state, q2 endstate
             bool running = true;
             while (running) {
-                if (mode == STEP) {
                     printOutStatus(mode);
-                }
                 if (currentState == END_STATE) {
+                    Console.WriteLine("end running");
                     running = false;
                 } else {
                     executeTransitionFunction();
@@ -84,16 +90,17 @@ namespace Universal_Turing_Machine {
                 Console.WriteLine("*****");
             }
             Console.WriteLine($"The result is: {result}");
-            printOutStatus(mode);
+            printOutStatus(STEP);
         }
 
         private void initalizeWord(string word) {
             //check word if valid numbers
+            Console.WriteLine($"initalizeWord {word}");
             string pattern = "^(0|[1-9][0-9]*)\\*(0|[1-9][0-9]*)$";
             Match match = Regex.Match(word, pattern);
             if (!match.Success) throw new ArgumentException($"Not a valid word: {word}");
-            int firstValue = Int32.Parse(match.Groups[0].Value);
-            int secondValue = Int32.Parse(match.Groups[1].Value);
+            int firstValue = Int32.Parse(match.Groups[1].Value);
+            int secondValue = Int32.Parse(match.Groups[2].Value);
             for (int i = 0; i < firstValue; i++) {
                 tapes[TAPE_ONE].AddElement('0');
             }

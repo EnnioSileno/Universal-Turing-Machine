@@ -17,6 +17,7 @@ namespace Universal_Turing_Machine {
             steps[VALUE_SELECTION] = new EmulationStepValueSelection();
             steps[MODE_SELECTION] = new EmulationStepModeSelection();
             steps[OVERVIEW] = new EmulationStepOverview();
+            steps[RUNNING] = new EmulationStepRunning();
         }
 
         public override MenuState Process(MenuState lastMenuState) {
