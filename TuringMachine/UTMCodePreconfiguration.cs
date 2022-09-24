@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Universal_Turing_Machine {
     class UTMCodePreconfiguration {
-        public static readonly string TRANSITION_SEPARATOR = "11";
-        public static readonly char VALUE_SEPARATOR = '1';
-        public static readonly char VALUE = '0';
+        private static readonly string TRANSITION_SEPARATOR = "11";
+        private static readonly char VALUE_SEPARATOR = '1';
+        private static readonly char VALUE = '0';
 
         public static string Preconfiguration(UTMMachineCodeType type) {
             return type == ADDITION ? getAddition() : getMultiplication();
@@ -20,16 +20,16 @@ namespace Universal_Turing_Machine {
         private static string getAddition() {
             string turingCode = "";
             // δ : (q1, 0__) = (q1, __0, RNR)
-            turingCode = encodeTransitionFunction(1, new char[] { '0', '_', '_' }, 1, new char[] { '_', '0', '_' },
+            turingCode = encodeTransitionFunction(1, new char[] { '0', '_', '_' }, 1, new char[] { '_', '_', '0' },
                     new UTMHeadMovement[] { RIGHT, NEUTRAL, RIGHT });
             // δ : (q1, 1__) = (q3, ___, RNN)
-            turingCode = encodeTransitionFunction(1, new char[] { '1', '_', '_' }, 3, new char[] { '_', '_', '_' },
+            turingCode += encodeTransitionFunction(1, new char[] { '1', '_', '_' }, 3, new char[] { '_', '_', '_' },
                     new UTMHeadMovement[] { RIGHT, NEUTRAL, NEUTRAL });
             // δ : (q3, 0__) = (q3, __0, RNR)
-            turingCode = encodeTransitionFunction(3, new char[] { '0', '_', '_' }, 3, new char[] { '_', '_', '0' },
+            turingCode += encodeTransitionFunction(3, new char[] { '0', '_', '_' }, 3, new char[] { '_', '_', '0' },
                     new UTMHeadMovement[] { RIGHT, NEUTRAL, RIGHT });
-            // δ : (q2, ___) = (q3, ___, NNN)
-            turingCode = encodeTransitionFunction(2, new char[] { '_', '_', '_' }, 3, new char[] { '_', '_', '_' },
+            // δ : (q3, ___) = (q2, ___, NNN)
+            turingCode += encodeTransitionFunction(3, new char[] { '_', '_', '_' }, 2, new char[] { '_', '_', '_' },
                     new UTMHeadMovement[] { NEUTRAL, NEUTRAL, NEUTRAL });
             turingCode += "1";
             return turingCode;
