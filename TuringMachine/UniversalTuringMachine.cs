@@ -1,10 +1,10 @@
 ﻿using static Universal_Turing_Machine.UTMHeadMovement;
-using static Universal_Turing_Machine.UTMRuntimeMode;
 
 using System;
 using System.Collections.Generic;
-using System.Collections;
 using System.Text.RegularExpressions;
+using System.Text;
+using System.Linq;
 
 namespace Universal_Turing_Machine {
     class UniversalTuringMachine {
@@ -16,15 +16,29 @@ namespace Universal_Turing_Machine {
         private static readonly int TAPE_TWO = 1;
         private static readonly int TAPE_THREE = 2;
 
+        private static UniversalTuringMachine universalTuringMachine;
+
         private readonly Dictionary<int, UTMHeadMovement> headMovementValues = new Dictionary<int, UTMHeadMovement>();
         private readonly List<TransitionFunction> transitionFunctions = new List<TransitionFunction>();
         private readonly Dictionary<int, char> turingAlphabetValues = new Dictionary<int, char>();
-        private readonly Dictionary<int, Tape> tapes = new Dictionary<int, Tape>();
-
+        private readonly Stack<utmStep> history = new Stack<utmStep>();
+        private Dictionary<int, Tape> tapes = new Dictionary<int, Tape>();
         private int currentState = INITIAL_STATE;
         private int stepsDone = 0;
 
-        public UniversalTuringMachine() {
+        private struct utmStep {
+            public Dictionary<int, Tape> tapes;
+            public int currentState;
+        }
+
+        public static UniversalTuringMachine Instance() {
+            if (universalTuringMachine == null) {
+                universalTuringMachine = new UniversalTuringMachine();
+            }
+            return universalTuringMachine;
+        }
+
+        private UniversalTuringMachine() {
             initalizeTuringAlphabet();
             initalizeHeadMovementValues();
             initalizeTapes();
@@ -43,21 +57,49 @@ namespace Universal_Turing_Machine {
         }
 
         private void initalizeHeadMovementValues() {
-            tapes[TAPE_ONE] = new Tape(TAPE_ONE);
-            tapes[TAPE_TWO] = new Tape(TAPE_TWO);
-            tapes[TAPE_THREE] = new Tape(TAPE_THREE);
+            tapes[TAPE_ONE] = new Tape();
+            tapes[TAPE_TWO] = new Tape();
+            tapes[TAPE_THREE] = new Tape();
         }
 
-        public void start(UTMConfiguration configuration) {
-            UTMRuntimeMode mode = configuration.UTMRuntimeMode;
+        public void RunNewConfiguration(UTMConfiguration utmConfiguration) {
+            resetConfiguration();
+            loadConfiguration(utmConfiguration);
+        }
+
+        public EmulationState executeNextTransition() {
+            if (currentState == END_STATE) {
+                return EmulationState.FINNISHED;
+            }
+            executeTransitionFunction();
+            return EmulationState.RUNNING;
+        }
+
+        public void GoBackOneTransition() {
+            if(history.Count != 0) {
+                stepsDone--;
+                utmStep lastStep = history.Pop();
+                tapes = lastStep.tapes;
+                currentState = lastStep.currentState;
+            }
+        }
+
+        public string PrintResult() {
+            StringBuilder builder = new StringBuilder();
+            builder.AppendLine($"***************************************");
+            builder.AppendLine($"Turing machine has finished");
+            builder.AppendLine($"Result: {calculateResult()}");
+            builder.AppendLine($"Steps done: {stepsDone}");
+            builder.AppendLine($"***************************************");
+            return builder.ToString();
+        }
+
+        private void loadConfiguration(UTMConfiguration configuration) {
             int IndexOfTMCodeEnd = configuration.MachineConfiguration.IndexOf("111");
             string machineConfiguration = configuration.MachineConfiguration.Substring(0, IndexOfTMCodeEnd);
-            Console.WriteLine("Decode transition functions");
             generateTransitionFuncitons(machineConfiguration);
-            Console.WriteLine("Created transition functions ");
-
-            runConfiguration(configuration.MachineConfiguration.Substring(IndexOfTMCodeEnd + 3), mode);
-            resetConfiguration();
+            string encodedWord = configuration.MachineConfiguration.Substring(IndexOfTMCodeEnd + 3);
+            initalizeWord(encodedWord);
         }
 
         private void generateTransitionFuncitons(string machineConfiguration) {
@@ -67,50 +109,39 @@ namespace Universal_Turing_Machine {
                                     headMovementValues, NUMBER_OF_TAPES, encodedFunction)));
         }
 
-        private void runConfiguration(string word, UTMRuntimeMode mode) {
-            //Fill tape
-            initalizeWord(word);
-            //start tm
-            //q1 is starting state, q2 endstate
-            bool running = true;
-            while (running) {
-                    printOutStatus(mode);
-                if (currentState == END_STATE) {
-                    Console.WriteLine("end running");
-                    running = false;
-                } else {
-                    executeTransitionFunction();
-                }
-            }
+        private int calculateResult() {
             int result = 0;
             for (int i = tapes[TAPE_THREE].HeadPosition; i >= 0; i--) {
                 if (tapes[TAPE_THREE].GetElement(i) == '0') result++;
             }
-            if (mode == STEP) {
-                Console.WriteLine("*****");
-            }
-            Console.WriteLine($"The result is: {result}");
-            printOutStatus(STEP);
+            return result;
         }
 
         private void initalizeWord(string word) {
             //check word if valid numbers
             Console.WriteLine($"initalizeWord {word}");
             string pattern = "^(0|[1-9][0-9]*)\\*(0|[1-9][0-9]*)$";
+            List<char> wordSequence = new List<char>();
             Match match = Regex.Match(word, pattern);
             if (!match.Success) throw new ArgumentException($"Not a valid word: {word}");
-            int firstValue = Int32.Parse(match.Groups[1].Value);
-            int secondValue = Int32.Parse(match.Groups[2].Value);
-            for (int i = 0; i < firstValue; i++) {
-                tapes[TAPE_ONE].AddElement('0');
+            int[] values = new int[match.Groups.Count - 1];
+            for (int i = 1; i < match.Groups.Count; i++) {
+                values[i - 1] = Int32.Parse(match.Groups[i].Value);
             }
-            tapes[TAPE_ONE].AddElement('1');
-            for (int i = 0; i < secondValue; i++) {
-                tapes[TAPE_ONE].AddElement('0');
-            }
+            for(int i = 0; i < values.Length; i++) {
+                wordSequence.AddRange('0', values[i]);
+                if(i + 1 != values.Length) wordSequence.Add('1');
+            }      
+            tapes[TAPE_ONE].LoadWord(wordSequence);
         }
 
         private void executeTransitionFunction() {
+            utmStep lastStep;
+            lastStep.tapes = tapes.ToDictionary(
+                                entry => entry.Key,
+                                entry => (Tape)entry.Value.Clone());
+            lastStep.currentState = currentState;
+            history.Push(lastStep);
             TransitionFunction funcToExecute = nextTransitionFunciton();
             writeNewSymbols(funcToExecute);
             moveTapeHeadPositions(funcToExecute);
@@ -154,26 +185,24 @@ namespace Universal_Turing_Machine {
             }
         }
 
-        private void resetConfiguration() {
+        private void resetConfiguration() { 
             transitionFunctions.Clear();
-            foreach(Tape tape in tapes.Values) {
+            history.Clear();
+            foreach (Tape tape in tapes.Values) {
                 tape.Reset();
             }
             currentState = INITIAL_STATE;
             stepsDone = 0;
         }
 
-        private void printOutStatus(UTMRuntimeMode mode) {
-            if (mode == STEP) {
-                Console.WriteLine("*****");
-                Console.WriteLine($"Steps done: {stepsDone}");
-                Console.WriteLine($"Current state: {currentState}");
-            }
-            foreach (Tape tape in tapes.Values) {
-                tape.PrintStatus(mode);
-            }
+        public override string ToString() {
+            StringBuilder builder = new StringBuilder();
+            builder.AppendLine("Tape states:");
+            builder.AppendLine(tapes[TAPE_ONE].ToString());
+            builder.AppendLine(tapes[TAPE_TWO].ToString());
+            builder.AppendLine(tapes[TAPE_THREE].ToString());
+            return builder.ToString();
         }
 
-        
     }
 }

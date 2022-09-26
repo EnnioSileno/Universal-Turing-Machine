@@ -18,11 +18,12 @@ namespace Universal_Turing_Machine {
             steps[MODE_SELECTION] = new EmulationStepModeSelection();
             steps[OVERVIEW] = new EmulationStepOverview();
             steps[RUNNING] = new EmulationStepRunning();
+            steps[FINNISHED] = new EmulationStepFinished();
         }
 
         public override MenuState Process(MenuState lastMenuState) {
             MenuState nextMenuState = lastMenuState;
-            EmulationState currentEmulationState = INTRO;
+            EmulationState currentEmulationState = END;
             EmulationState nextEmulationState = INTRO;
             
             do {
@@ -37,23 +38,25 @@ namespace Universal_Turing_Machine {
 
         public void printHeader(EmulationState emulationState) {
             base.Process(EMULATION);
-            Console.WriteLine($"Current emulation state: {emulationState}");
-            if (emulationState >= VALUE_SELECTION) {
-                Console.WriteLine("* Chosen Preconfiguration");
-                Console.WriteLine($"* {(utmConfiguration.UTMCodeType == ADDITION ? "->" : "  ")} [1] Addition");
-                Console.WriteLine($"* {(utmConfiguration.UTMCodeType == MULTIPLICATION ? "->" : "  ")} [2] Multiplication");
-                Console.WriteLine($"{(emulationState != VALUE_SELECTION ? "*" : "")}");
-            }
-            if (emulationState >= MODE_SELECTION) {
-                Console.WriteLine($"* The {(utmConfiguration.UTMCodeType == ADDITION ? "first summand" : "multiplier")}: {utmConfiguration.FirstValue}");
-                Console.WriteLine($"* The {(utmConfiguration.UTMCodeType == ADDITION ? "second summand" : "multiplicand")}: {utmConfiguration.SecondValue}");
-                Console.WriteLine($"{(emulationState != MODE_SELECTION ? "*" : "")}");
-            }
-            if (emulationState >= OVERVIEW) {
-                Console.WriteLine("* Chosen Runtime Mode");
-                Console.WriteLine($"*   {(utmConfiguration.UTMRuntimeMode == STEP ? "->" : "  ")} [1] Step");
-                Console.WriteLine($"*   {(utmConfiguration.UTMRuntimeMode == CONTINUOUS ? "->" : "  ")} [2] Continuous");
-                Console.WriteLine("\n");
+            if(emulationState != RUNNING) { 
+                Console.WriteLine($"Current emulation state: {emulationState}");
+                if (emulationState >= VALUE_SELECTION) {
+                    Console.WriteLine("* Chosen Preconfiguration");
+                    Console.WriteLine($"* {(utmConfiguration.UTMCodeType == ADDITION ? "->" : "  ")} [1] Addition");
+                    Console.WriteLine($"* {(utmConfiguration.UTMCodeType == MULTIPLICATION ? "->" : "  ")} [2] Multiplication");
+                    Console.WriteLine($"{(emulationState != VALUE_SELECTION ? "*" : "")}");
+                }
+                if (emulationState >= MODE_SELECTION) {
+                    Console.WriteLine($"* The {(utmConfiguration.UTMCodeType == ADDITION ? "first summand" : "multiplier")}: {utmConfiguration.FirstValue}");
+                    Console.WriteLine($"* The {(utmConfiguration.UTMCodeType == ADDITION ? "second summand" : "multiplicand")}: {utmConfiguration.SecondValue}");
+                    Console.WriteLine($"{(emulationState != MODE_SELECTION ? "*" : "")}");
+                }
+                if (emulationState >= OVERVIEW) {
+                    Console.WriteLine("* Chosen Runtime Mode");
+                    Console.WriteLine($"*   {(utmConfiguration.UTMRuntimeMode == STEP ? "->" : "  ")} [1] Step");
+                    Console.WriteLine($"*   {(utmConfiguration.UTMRuntimeMode == CONTINUOUS ? "->" : "  ")} [2] Continuous");
+                    Console.WriteLine("\n");
+                }
             }
         }
     }

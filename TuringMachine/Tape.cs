@@ -8,21 +8,27 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Universal_Turing_Machine {
-    class Tape {
-        private static readonly int TAPE_OVERLOAD = 15;
+    class Tape : ICloneable {
+        private static readonly int TAPE_LENGTH = 31;
 
-        private readonly List<char> tape = new List<char>();
-        private int headPosition = 0;
-        private int tapeNumber;
+        private List<char> tape = new List<char>();
+        private int headPosition;
 
         public int HeadPosition { get { return headPosition; } }
-        public Tape(int tapeNumber) {
-            this.tapeNumber = tapeNumber;
+        public Tape() {
+            Reset();
         }
 
-        public void AddElement(char element) {
-            tape.Add(element);
+        public void Reset() {
+            tape.Clear();
+            tape.AddRange('_', TAPE_LENGTH);
+            headPosition = TAPE_LENGTH / 2;
         }
+
+        public void LoadWord(List<char> word) {
+            tape.ReplaceAt(headPosition, word);
+        }
+
 
         public char GetElementOfHeadPosition() {
             return tape[HeadPosition]; 
@@ -43,25 +49,22 @@ namespace Universal_Turing_Machine {
             }
         }
 
-        public void Reset() {
-            headPosition = 0;
-            tape.Clear();        
+        public override string ToString() {
+            List<char> tempList = new List<char>();
+            tempList.AddRange(' ', headPosition - 1);
+            tempList.Add('v');
+            tempList.AddRange(' ', TAPE_LENGTH - headPosition);
+            StringBuilder builder = new StringBuilder();
+            builder.AppendLine($"      { String.Join(" ", tempList)}");
+            builder.AppendLine($"...,{ String.Join(",", tape)},...");
+            return builder.ToString();
         }
 
-        public void PrintStatus(UTMRuntimeMode mode) {
-            while (headPosition - TAPE_OVERLOAD < 0) {
-                tape.Insert(0, '_');
-                headPosition++;
-            }
-            while (headPosition + TAPE_OVERLOAD > tape.Count - 1) {
-                tape.Add('_');
-            }
-            if (mode == STEP) {
-                Console.WriteLine($"Tape {tapeNumber}: ...");
-                Console.WriteLine($"{String.Join(",", tape)}");
-                Console.WriteLine("...");
-                Console.WriteLine($"Index Read/write-head: {headPosition}                               ^");
-            }
+        public object Clone() {
+            Tape tape = new Tape();
+            tape.headPosition = this.headPosition;
+            tape.tape = new List<char>(this.tape);
+            return tape;
         }
     }
 }
